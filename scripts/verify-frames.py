@@ -1,6 +1,6 @@
 """Verifies the extracted frames (run after extract-frames.py):  python3 scripts/verify-frames.py
 
-For every public/frames/<mood>.png:
+For every public/frames/<mood>.webp:
   - RGBA with a real alpha channel, all five on the same canvas size
   - both photo slots transparent (alpha 0 over >= 97% of the slot box, excluding stickers)
   - no painted checkerboard left in visible pixels (grey/white grid pattern)
@@ -59,8 +59,8 @@ def checker_left(rgb, alpha, boxes):
 
 for mood, info in slots.items():
     print(mood)
-    im = Image.open(os.path.join(ROOT, 'public', 'frames', f'{mood}.png'))
-    check(im.mode == 'RGBA', f'{mood}: RGBA (mode {im.mode})')
+    im = Image.open(os.path.join(ROOT, 'public', 'frames', f'{mood}.webp'))
+    check(im.format == 'WEBP' and im.mode == 'RGBA', f'{mood}: WebP with alpha (mode {im.mode})')
     sizes.add(im.size)
     arr = np.asarray(im)
     rgb, alpha = arr[..., :3], arr[..., 3]

@@ -6,11 +6,11 @@ Vite + React 19 + TypeScript + Tailwind CSS 4 (stack yang sama dengan NadheWedd;
 
 | Mood | URL di QR | Frame |
 |---|---|---|
-| Happy | `/booth/happy` | `public/frames/happy.png` |
-| Sad | `/booth/sad` | `public/frames/sad.png` |
-| Tired | `/booth/tired` | `public/frames/tired.png` |
-| Anxious | `/booth/anxious` | `public/frames/anxious.png` |
-| Confident | `/booth/confident` | `public/frames/confident.png` |
+| Happy | `/booth/happy` | `public/frames/happy.webp` |
+| Sad | `/booth/sad` | `public/frames/sad.webp` |
+| Tired | `/booth/tired` | `public/frames/tired.webp` |
+| Anxious | `/booth/anxious` | `public/frames/anxious.webp` |
+| Confident | `/booth/confident` | `public/frames/confident.webp` |
 
 ```
 /                 Halaman sambutan (cara pakai)
@@ -48,16 +48,17 @@ Kamera HP hanya jalan lewat **HTTPS** (lihat bawah). Untuk mencoba di HP: deploy
 
 ## Frame & dua slot foto
 
-Sumber desain: `src/assets/mood_frame.png` (1536×1024, **RGB tanpa alpha**: checkerboard di slot hanya gambar). `scripts/extract-frames.py` membuat PNG transparan:
+Sumber desain: `src/assets/mood_frame.png` (1536×1024, **RGB tanpa alpha**: checkerboard di slot hanya gambar). `scripts/extract-frames.py` membuat frame transparan (WebP):
 
 1. Latar sheet (krem hangat + bayangan) dihapus dengan flood-fill dari tepi; outline putih frame bersifat netral sehingga **tidak ikut terhapus**.
 2. Frame yang saling menempel dipisah dengan *seam* dinamis (lewat latar atau outline putih, tidak memotong ilustrasi).
 3. Slot dideteksi dari **pola papan catur** (kotak abu-abu yang berselang dengan kotak putih), bukan dari warna putih. Stiker yang menumpuk di slot (balon kata, kucing, coretan, clipboard, rambut, kacamata) tetap utuh beserta outline putihnya; kantong putih di dalam balon kata tidak dilubangi.
 4. Upscale 4× (Lanczos + unsharp mask) ke **1288×2320 px**, tepi slot digambar ulang secara analitik agar tajam.
+5. Disimpan sebagai **WebP** (warna kualitas 92, alpha lossless): ±260 KB per frame (PNG ±2,3 MB), tampilan identik dan lubang slot tetap persis transparan.
 
 Koordinat slot (piksel frame, termasuk *bleed* 12 px di bawah stroke) ada di [`src/config/frames.ts`](src/config/frames.ts) → `photoSlots`; hasil ukur mentah di [`docs/frame-extraction.json`](docs/frame-extraction.json). Koordinat **berbeda per frame** (mis. slot 1 Tired lebih sempit karena tertutup kucing & balon "Rest Well").
 
-**Mengganti dengan desain resolusi tinggi:** simpan PNG transparan final (disarankan ≥1288×2320, slot benar-benar transparan) di `public/frames/<mood>.png`, ukur lubang slot, perbarui `frameWidth/frameHeight/photoSlots`, lalu `npm test`.
+**Mengganti dengan desain resolusi tinggi:** simpan PNG transparan final (disarankan ≥1288×2320, slot benar-benar transparan) di `public/frames/<mood>.webp` (konversi: `Image.save(..., 'WEBP', quality=92, alpha_quality=100)`), ukur lubang slot, perbarui `frameWidth/frameHeight/photoSlots`, lalu `npm test`.
 
 ## Kartu QR
 

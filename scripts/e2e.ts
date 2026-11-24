@@ -174,7 +174,7 @@ try {
     const page = await newPage()
     for (const f of FRAMES) {
       await page.go(`/booth/${f.id}`)
-      await page.wait(`document.querySelector('img[alt="Frame ${f.name}"]')?.dataset.frame === '/frames/${f.id}.png' && document.querySelector('h1')?.textContent === '${f.name}'`)
+      await page.wait(`document.querySelector('img[alt="Frame ${f.name}"]')?.dataset.frame === '/frames/${f.id}.webp' && document.querySelector('h1')?.textContent === '${f.name}'`)
     }
     await page.shot('01-intro-confident')
     await page.close()
@@ -199,7 +199,7 @@ try {
     // The themed frame must match the browser's own CSS filter (our JS port of the maths).
     const filterDiff = await page.eval<number>(`(async () => {
       const load = (src) => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src });
-      const [orig, ours] = await Promise.all([load('/frames/happy.png'), load(${JSON.stringify(cameraFrame)})]);
+      const [orig, ours] = await Promise.all([load('/frames/happy.webp'), load(${JSON.stringify(cameraFrame)})]);
       const W = 322, H = 580;
       const draw = (img, filter) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); if (filter) x.filter = filter; x.drawImage(img, 0, 0, W, H); return x.getImageData(0, 0, W, H).data };
       const ref = draw(orig, ${JSON.stringify(THEME.frameFilter)}), got = draw(ours, '');

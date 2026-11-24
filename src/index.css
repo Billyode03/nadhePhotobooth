@@ -59,7 +59,7 @@
 
   .paper {
     background-color: var(--color-cream);
-    background-image: linear-gradient(rgb(246 250 255 / 0.58), rgb(246 250 255 / 0.78)), url('/images/myphotobooth-bg.png');
+    background-image: linear-gradient(rgb(246 250 255 / 0.58), rgb(246 250 255 / 0.78)), url('/images/myphotobooth-bg.webp');
     background-position: center;
     background-size: cover;
   }

@@ -130,7 +130,7 @@ export const FRAMES: FrameConfig[] = [
     name: 'Happy',
     card: 'Card 01',
     tagline: 'You deserve every little happiness.',
-    frame: '/frames/happy.png',
+    frame: '/frames/happy.webp',
     frameWidth: W,
     frameHeight: H,
     photoSlots: [
@@ -145,7 +145,7 @@ export const FRAMES: FrameConfig[] = [
     name: 'Sad',
     card: 'Card 02',
     tagline: "It's okay not to be okay.",
-    frame: '/frames/sad.png',
+    frame: '/frames/sad.webp',
     frameWidth: W,
     frameHeight: H,
     photoSlots: [
@@ -160,7 +160,7 @@ export const FRAMES: FrameConfig[] = [
     name: 'Tired',
     card: 'Card 03',
     tagline: 'Resting is not giving up.',
-    frame: '/frames/tired.png',
+    frame: '/frames/tired.webp',
     frameWidth: W,
     frameHeight: H,
     photoSlots: [
@@ -176,7 +176,7 @@ export const FRAMES: FrameConfig[] = [
     name: 'Anxious',
     card: 'Card 04',
     tagline: 'Take a breath, one step at a time.',
-    frame: '/frames/anxious.png',
+    frame: '/frames/anxious.webp',
     frameWidth: W,
     frameHeight: H,
     photoSlots: [
@@ -191,7 +191,7 @@ export const FRAMES: FrameConfig[] = [
     name: 'Confident',
     card: 'Card 05',
     tagline: 'You are enough, just as you are.',
-    frame: '/frames/confident.png',
+    frame: '/frames/confident.webp',
     frameWidth: W,
     frameHeight: H,
     photoSlots: [

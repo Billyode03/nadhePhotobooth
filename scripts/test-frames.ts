@@ -4,7 +4,7 @@
 // - two slots per frame, inside the frame, top above bottom, not overlapping, covering
 //   the transparent hole measured by scripts/extract-frames.py
 // - QR base URL validation rejects localhost/private/http addresses
-import { readFileSync } from 'node:fs'
+import { readFileSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import assert from 'node:assert/strict'
 import { boothUrl, findFrame, FRAMES, isPublicUrl, outputSize, type FrameConfig } from '../src/config/frames.ts'
@@ -27,11 +27,12 @@ const test = (name: string, fn: () => void) => {
   }
 }
 
-/** Width, height and colour type from a PNG's IHDR chunk. */
-function pngInfo(path: string) {
+/** Size and alpha flag of a WebP file (extended "VP8X" header, used for images with alpha). */
+function webpInfo(path: string) {
   const b = readFileSync(path)
-  assert.equal(b.toString('latin1', 1, 4), 'PNG', `${path} is not a PNG`)
-  return { width: b.readUInt32BE(16), height: b.readUInt32BE(20), colorType: b[25] }
+  assert.equal(b.toString('latin1', 0, 4) + b.toString('latin1', 8, 12), 'RIFFWEBP', `${path} is not a WebP`)
+  assert.equal(b.toString('latin1', 12, 16), 'VP8X', `${path} has no extended header (no alpha)`)
+  return { width: b.readUIntLE(24, 3) + 1, height: b.readUIntLE(27, 3) + 1, alpha: (b[20] & 0x10) !== 0 }
 }
 
 console.log('Mood catalogue')
@@ -45,12 +46,14 @@ test('ids are unique, lowercase and URL-safe', () => {
 })
 
 for (const f of FRAMES) {
-  test(`${f.id}: RGBA PNG ${f.frameWidth}×${f.frameHeight} as configured`, () => {
-    const png = pngInfo(file(`public${f.frame}`))
-    assert.equal(png.colorType, 6, `PNG colour type ${png.colorType}, expected 6 (RGBA)`)
-    assert.deepEqual([png.width, png.height], [f.frameWidth, f.frameHeight])
+  test(`${f.id}: WebP with alpha, ${f.frameWidth}×${f.frameHeight} as configured, < 600 KB`, () => {
+    const path = file(`public${f.frame}`)
+    const img = webpInfo(path)
+    assert.ok(img.alpha, 'no alpha channel')
+    assert.deepEqual([img.width, img.height], [f.frameWidth, f.frameHeight])
+    assert.ok(statSync(path).size < 600 * 1024, `frame is ${Math.round(statSync(path).size / 1024)} KB (too heavy for mobile data)`)
     const out = outputSize(f)
-    assert.ok(Math.abs(out.w / out.h - png.width / png.height) < 0.001, 'output ratio ≠ frame ratio')
+    assert.ok(Math.abs(out.w / out.h - img.width / img.height) < 0.001, 'output ratio ≠ frame ratio')
   })
   test(`${f.id}: two slots, top then bottom, inside the frame, not overlapping`, () => {
     assert.equal(f.photoSlots.length, 2)
@@ -79,11 +82,11 @@ test('slot coordinates are measured per frame (not all identical)', () => {
 
 console.log('QR mapping')
 for (const id of ['happy', 'sad', 'tired', 'anxious', 'confident']) {
-  test(`/booth/${id} opens "${id}" with /frames/${id}.png`, () => {
+  test(`/booth/${id} opens "${id}" with /frames/${id}.webp`, () => {
     const r = findFrame(id)
     assert.equal(r.status, 'ok')
     assert.equal(r.status === 'ok' && r.frame.id, id)
-    assert.equal(r.status === 'ok' && r.frame.frame, `/frames/${id}.png`)
+    assert.equal(r.status === 'ok' && r.frame.frame, `/frames/${id}.webp`)
   })
 }
 test('slug is case-insensitive and ignores trailing slash', () => {

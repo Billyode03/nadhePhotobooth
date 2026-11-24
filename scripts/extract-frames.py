@@ -1,6 +1,6 @@
 """Extracts the five mood frames from the design sheet into transparent PNGs.
 
-    python3 scripts/extract-frames.py            # writes public/frames/<mood>.png + slots JSON
+    python3 scripts/extract-frames.py            # writes public/frames/<mood>.webp + slots JSON
     python3 scripts/extract-frames.py --debug    # also writes debug images to /tmp-like DEBUG_DIR
 
 Source: src/assets/mood_frame.png (1536x1024, RGB — NO alpha channel). The checkerboard
@@ -331,7 +331,9 @@ def main():
         a = np.minimum(a_outer, 1 - hole_hr)
 
         out = np.dstack([np.asarray(big), (a * 255).round().astype(np.uint8)])
-        Image.fromarray(out).save(os.path.join(OUT, f'{mood}.png'), optimize=True)
+        # WebP: colour lossy q92 (visually identical), alpha LOSSLESS so the slot holes stay exact.
+        # ~260 KB per frame instead of ~2.3 MB PNG.
+        Image.fromarray(out).save(os.path.join(OUT, f'{mood}.webp'), 'WEBP', quality=92, method=6, alpha_quality=100)
 
         fw, fh = cw * S, ch * S
         report[mood] = {
