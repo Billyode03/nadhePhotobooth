@@ -509,7 +509,9 @@ try {
     for (const f of FRAMES) await page.wait(`document.querySelector('[data-testid="transparency-${f.id}"]')?.textContent.includes('Status: OK')`, 10000)
     const links = await page.eval<string[]>(`[...document.querySelectorAll('a')].filter(a => /Lihat PNG|Unduh Frame/.test(a.textContent)).map(a => a.href)`)
     assert.equal(links.length, 10, 'frame links missing')
-    assert.ok(links.every((h) => h.startsWith('blob:')), 'frame links do not point to the themed frame')
+    // With THEME.frameFilter the links point to the filtered image (blob:), without it to the file itself.
+    const expected = THEME.frameFilter ? (h: string) => h.startsWith('blob:') : (h: string) => /\/frames\/[a-z]+\.webp$/.test(h)
+    assert.ok(links.every(expected), `frame links point to the wrong image: ${links[0]}`)
     await page.click('Unduh Semua Frame (.zip)')
     let zip = ''
     for (let i = 0; i < 100 && !zip; i++) {

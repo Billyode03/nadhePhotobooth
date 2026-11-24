@@ -2,11 +2,11 @@
 // (sun, rain cloud, sleepy cat, scribble, crown). Kawaii style: chunky dark outline,
 // rosy cheeks. All share a 200×200 viewBox.
 
-const INK = '#18345f'
-const CHEEK = '#9fd1ff'
+const INK = '#3b2a2f'
+const CHEEK = '#ff9db0'
 
 const sun = `
-<g stroke="#155eef" stroke-width="9" stroke-linecap="round">
+<g stroke="#f47805" stroke-width="9" stroke-linecap="round">
   ${Array.from({ length: 10 }, (_, i) => {
     const a = (i / 10) * Math.PI * 2
     const r1 = 74
@@ -14,8 +14,8 @@ const sun = `
     return `<line x1="${100 + Math.cos(a) * r1}" y1="${100 + Math.sin(a) * r1}" x2="${100 + Math.cos(a) * r2}" y2="${100 + Math.sin(a) * r2}"/>`
   }).join('')}
 </g>
-<circle cx="100" cy="100" r="60" fill="#9bd4ff" stroke="#155eef" stroke-width="7"/>
-<circle cx="84" cy="84" r="20" fill="#eaf6ff" opacity=".8"/>
+<circle cx="100" cy="100" r="60" fill="#ffd23f" stroke="#f47805" stroke-width="7"/>
+<circle cx="84" cy="84" r="20" fill="#ffe680" opacity=".7"/>
 <path d="M74 98 q8 -10 16 0 M110 98 q8 -10 16 0" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>
 <path d="M84 114 q16 18 32 0" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>
 <ellipse cx="68" cy="114" rx="9" ry="6" fill="${CHEEK}"/><ellipse cx="132" cy="114" rx="9" ry="6" fill="${CHEEK}"/>`
@@ -32,15 +32,15 @@ const cloud = `
 
 const cat = `
 <path d="M40 150 q-6 -54 18 -86 l-6 -38 q22 6 38 26 q10 -2 20 0 q16 -20 38 -26 l-6 38 q24 32 18 86z" fill="#fff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
-<path d="M56 64 l-3 -26 q14 6 22 16z M144 64 l3 -26 q-14 6 -22 16z" fill="#b9dcff"/>
-<path d="M118 52 q18 -4 26 12 q6 14 -6 22 q-14 -10 -20 -34z" fill="#d9ecff"/>
+<path d="M56 64 l-3 -26 q14 6 22 16z M144 64 l3 -26 q-14 6 -22 16z" fill="#ffc2cf"/>
+<path d="M118 52 q18 -4 26 12 q6 14 -6 22 q-14 -10 -20 -34z" fill="#e8c4a0"/>
 <path d="M66 106 q10 8 20 0 M114 106 q10 8 20 0" fill="none" stroke="${INK}" stroke-width="5.5" stroke-linecap="round"/>
 <path d="M92 122 q8 8 8 0 q0 8 8 0" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
 <path d="M28 112 h22 M28 126 l22 -6 M172 112 h-22 M172 126 l-22 -6" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
 <ellipse cx="62" cy="122" rx="9" ry="6" fill="${CHEEK}"/><ellipse cx="138" cy="122" rx="9" ry="6" fill="${CHEEK}"/>
 <path d="M32 150 h136" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>
-<text x="160" y="40" font-family="Fredoka, sans-serif" font-weight="700" font-size="34" fill="#246bce">z</text>
-<text x="176" y="20" font-family="Fredoka, sans-serif" font-weight="700" font-size="24" fill="#246bce">z</text>`
+<text x="160" y="40" font-family="Fredoka, sans-serif" font-weight="700" font-size="34" fill="#8633a3">z</text>
+<text x="176" y="20" font-family="Fredoka, sans-serif" font-weight="700" font-size="24" fill="#8633a3">z</text>`
 
 const scribble = `
 <g fill="none" stroke="#231c1e" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
@@ -53,12 +53,12 @@ const scribble = `
 </g>`
 
 const crown = `
-<path d="M34 146 l-10 -88 l42 36 l34 -56 l34 56 l42 -36 l-10 88z" fill="#9bd4ff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
-<path d="M40 128 h120" stroke="#246bce" stroke-width="8"/>
-<rect x="34" y="146" width="132" height="22" rx="8" fill="#74b9ff" stroke="${INK}" stroke-width="7"/>
-<circle cx="24" cy="54" r="10" fill="#b9dcff" stroke="${INK}" stroke-width="5"/><circle cx="100" cy="32" r="10" fill="#b9dcff" stroke="${INK}" stroke-width="5"/><circle cx="176" cy="54" r="10" fill="#b9dcff" stroke="${INK}" stroke-width="5"/>
-<circle cx="100" cy="112" r="12" fill="#155eef" stroke="${INK}" stroke-width="4"/>
-<circle cx="62" cy="118" r="8" fill="#eaf6ff" stroke="${INK}" stroke-width="4"/><circle cx="138" cy="118" r="8" fill="#eaf6ff" stroke="${INK}" stroke-width="4"/>
+<path d="M34 146 l-10 -88 l42 36 l34 -56 l34 56 l42 -36 l-10 88z" fill="#ffd23f" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
+<path d="M40 128 h120" stroke="#f0a500" stroke-width="8"/>
+<rect x="34" y="146" width="132" height="22" rx="8" fill="#ffc531" stroke="${INK}" stroke-width="7"/>
+<circle cx="24" cy="54" r="10" fill="#ffd23f" stroke="${INK}" stroke-width="5"/><circle cx="100" cy="32" r="10" fill="#ffd23f" stroke="${INK}" stroke-width="5"/><circle cx="176" cy="54" r="10" fill="#ffd23f" stroke="${INK}" stroke-width="5"/>
+<circle cx="100" cy="112" r="12" fill="#ff5a7a" stroke="${INK}" stroke-width="4"/>
+<circle cx="62" cy="118" r="8" fill="#5ab0ff" stroke="${INK}" stroke-width="4"/><circle cx="138" cy="118" r="8" fill="#5ab0ff" stroke="${INK}" stroke-width="4"/>
 <path d="M70 80 l6 -14" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>`
 
 export const MOOD_ICONS: Record<string, string> = { happy: sun, sad: cloud, tired: cat, anxious: scribble, confident: crown }

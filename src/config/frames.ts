@@ -67,11 +67,13 @@ export const SITE = {
 /** Visual theme applied to the frame artwork. */
 export const THEME = {
   /**
-   * CSS-style filter baked into every frame (preview AND saved photo), so the original mood
-   * illustrations follow the blue-and-white MyPhotobooth look. Set to '' for original colours.
+   * CSS-style filter baked into every frame (preview AND saved photo). '' = original colours
+   * of src/assets/mood_frame.png (current setting).
    * Supported: grayscale, sepia, saturate, hue-rotate, contrast, brightness.
    */
-  frameFilter: 'grayscale(1) contrast(1.06) sepia(1) hue-rotate(165deg) saturate(2.1) brightness(1.08)',
+  frameFilter: '',
+  // Blue MyPhotobooth look, if wanted again:
+  // frameFilter: 'grayscale(1) contrast(1.06) sepia(1) hue-rotate(165deg) saturate(2.1) brightness(1.08)',
 }
 
 /** Global output settings. */
@@ -137,7 +139,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 268, y: 476, width: 840, height: 608, radius: 162 },
       { id: 'photo-2', x: 268, y: 1148, width: 840, height: 624, radius: 176 },
     ],
-    colors: { primary: '#155eef', soft: '#eaf3ff', accent: '#74b9ff' },
+    colors: { primary: '#f47805', soft: '#ffe9a6', accent: '#ffc531' },
     enabled: true,
   },
   {
@@ -152,7 +154,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 228, y: 444, width: 828, height: 604, radius: 176 },
       { id: 'photo-2', x: 240, y: 1112, width: 816, height: 624, radius: 160 },
     ],
-    colors: { primary: '#246bce', soft: '#e8f2ff', accent: '#8dc2ff' },
+    colors: { primary: '#215fc0', soft: '#d6e8fd', accent: '#6fa8f0' },
     enabled: true,
   },
   {
@@ -168,7 +170,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 384, y: 460, width: 704, height: 608, radius: 176 },
       { id: 'photo-2', x: 240, y: 1132, width: 844, height: 624, radius: 174 },
     ],
-    colors: { primary: '#0b56c3', soft: '#e4f0ff', accent: '#65aaf7' },
+    colors: { primary: '#8633a3', soft: '#eadcfb', accent: '#b98be6' },
     enabled: true,
   },
   {
@@ -183,7 +185,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 244, y: 464, width: 840, height: 604, radius: 178 },
       { id: 'photo-2', x: 244, y: 1132, width: 840, height: 628, radius: 178 },
     ],
-    colors: { primary: '#1479dc', soft: '#e6f4ff', accent: '#77bfff' },
+    colors: { primary: '#108e60', soft: '#d6f1e1', accent: '#6cc79b' },
     enabled: true,
   },
   {
@@ -198,7 +200,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 240, y: 464, width: 844, height: 608, radius: 182 },
       { id: 'photo-2', x: 236, y: 1136, width: 844, height: 624, radius: 174 },
     ],
-    colors: { primary: '#174db8', soft: '#e9f1ff', accent: '#9bc9ff' },
+    colors: { primary: '#d33257', soft: '#ffd9e1', accent: '#ff8fa6' },
     enabled: true,
   },
 ]
