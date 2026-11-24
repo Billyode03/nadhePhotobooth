@@ -1,4 +1,6 @@
+import { FRAMES } from '../config/frames'
 import { CameraIcon, DownloadIcon, QrIcon } from '../components/ui/Icons'
+import { navigate } from '../lib/router'
 
 const STEPS = [
   { icon: QrIcon, title: 'Pilih kartu mood', body: 'Ambil salah satu kartu di meja photobooth, lalu scan QR-nya dengan kamera HP.' },
@@ -34,9 +36,32 @@ export function WelcomePage() {
         ))}
       </ol>
 
-      <div className="mx-auto mt-8 w-full max-w-sm rounded-2xl bg-maroon px-5 py-4 text-center text-ivory">
-        <p className="text-sm">Scan QR pada kartu mood untuk memulai.</p>
+      {/* A hint, not a button: dashed outline so nobody tries to tap it. */}
+      <div className="mx-auto mt-8 flex w-full max-w-sm items-center gap-3 rounded-2xl border-2 border-dashed border-maroon/40 px-4 py-3 text-ink">
+        <QrIcon size={28} className="shrink-0 text-maroon" />
+        <p className="text-sm">
+          Buka <strong>kamera HP</strong>, arahkan ke QR di kartu mood, lalu ketuk link yang muncul.
+        </p>
       </div>
+
+      <section className="mx-auto mt-8 w-full max-w-sm" aria-labelledby="pick-mood">
+        <h2 id="pick-mood" className="text-center text-sm font-medium text-ink">
+          Belum scan kartu? Langsung pilih mood
+        </h2>
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
+          {FRAMES.filter((f) => f.enabled).map((f, i, all) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => navigate(`/booth/${f.id}`)}
+              className={`min-h-12 rounded-full text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.97] ${i === all.length - 1 && all.length % 2 ? 'col-span-2' : ''}`}
+              style={{ backgroundColor: f.colors.primary, fontFamily: 'var(--font-mood)' }}
+            >
+              {f.name}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <footer className="safe-bottom mt-auto pt-10 text-center text-[0.7rem] text-warm-gray/80">MyPhotobooth</footer>
     </main>

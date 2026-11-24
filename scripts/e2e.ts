@@ -353,8 +353,13 @@ try {
     const page = await newPage()
     await page.cdp.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
     await page.go('/panitia')
-    assert.match(await page.text(), /Isi alamat https:\/\/ publik/)
-    assert.ok(await page.eval(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('Unduh Semua Kartu')).disabled`), 'zip enabled for localhost')
+    if (BASE.startsWith('http://localhost')) {
+      assert.match(await page.text(), /Isi alamat https:\/\/ publik/)
+      assert.ok(await page.eval(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('Unduh Semua Kartu')).disabled`), 'zip enabled for localhost')
+    } else {
+      // On the real https domain the page pre-fills its own address.
+      assert.equal(await page.eval(`document.querySelector('input[inputmode=url]').value`), BASE)
+    }
     for (const f of FRAMES) await page.wait(`document.querySelector('[data-testid="transparency-${f.id}"]')?.textContent.includes('Status: OK')`, 10000)
     await page.close()
   })
@@ -493,7 +498,7 @@ try {
     await page.wait(`document.querySelector('video')?.readyState >= 2 && !document.querySelector("button[aria-label='Ambil foto']").disabled`)
     await page.go('/booth/unknown-card')
     await page.click('Cara Menggunakan')
-    await page.wait('document.body.textContent.includes("Scan QR pada kartu mood")')
+    await page.wait('document.body.textContent.includes("Langsung pilih mood")')
     await page.close()
   })
 
@@ -512,6 +517,20 @@ try {
       zip = readdirSync(join(OUT, 'downloads')).find((f) => /frame\.zip$/.test(f)) ?? ''
     }
     assert.ok(zip, 'frame zip not downloaded')
+    await page.close()
+  })
+
+  await test('home page: hint is not a button; mood buttons open the right booth', async () => {
+    const page = await newPage()
+    await page.go('/')
+    assert.ok(!(await page.eval(`[...document.querySelectorAll('button')].some(b => b.textContent.includes('kamera HP'))`)), 'hint rendered as a button')
+    for (const f of FRAMES) {
+      await page.go('/')
+      await page.click(f.name)
+      await page.wait(`location.pathname === '/booth/${f.id}' && document.querySelector('h1')?.textContent === '${f.name}'`)
+    }
+    await page.go('/')
+    await page.shot('00-home')
     await page.close()
   })
 } finally {
