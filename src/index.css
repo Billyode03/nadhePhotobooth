@@ -1,0 +1,125 @@
+@import 'tailwindcss';
+
+/* Nadhe design tokens (from NadheWedd src/index.css): ivory/cream base, maroon action, gold accent. */
+@theme {
+  --color-maroon: #7a1b1b;
+  --color-maroon-deep: #5e1414;
+  --color-gold: #d4af37;
+  --color-gold-deep: #8a6a22;
+  --color-champagne: #ebd3a1;
+  --color-cream: #fff7eb;
+  --color-ivory: #fffbf4;
+  --color-sand: #f6ecdc;
+  --color-warm-gray: #7a6d60;
+  --color-ink: #4a2925;
+  --color-night: #1c1412;
+
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-mood: 'Fredoka', 'Poppins', system-ui, sans-serif;
+  --font-sans: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-deep);
+    outline-offset: 3px;
+  }
+
+  img {
+    -webkit-user-drag: none;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+
+  .paper {
+    background-color: var(--color-cream);
+    background-image: radial-gradient(100% 45% at 50% 0%, rgb(255 253 248 / 0.8), transparent 72%);
+  }
+
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top), 0.75rem);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+}
+
+/* Countdown number pop + shutter flash. */
+@keyframes count-pop {
+  0% { transform: scale(1.6); opacity: 0; }
+  25% { transform: scale(1); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0; }
+}
+@keyframes flash {
+  from { opacity: 0.95; }
+  to { opacity: 0; }
+}
+.count-pop { animation: count-pop 1s var(--ease-soft) both; }
+.flash { animation: flash 450ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .count-pop, .flash { animation: none; }
+  .flash { opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   Printing: only .print-sheet is printed. The @page size is injected at runtime
+   from PRINT in src/config/frames.ts (see src/booth/print.ts).
+   --------------------------------------------------------------------------- */
+.print-only { display: none; }
+@media print {
+  html, body { background: #fff !important; }
+  body * { visibility: hidden; }
+  .print-sheet, .print-sheet * { visibility: visible; }
+  .print-sheet {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+  }
+  .print-sheet img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* QR cards (/panitia): one card per page at exact card size (@page set at runtime). */
+@media print {
+  .no-print { display: none !important; }
+  .print-area { display: block !important; position: absolute; inset: 0 auto auto 0; margin: 0; }
+  .print-area, .print-area * { visibility: visible; }
+  .card-page { break-after: page; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .card-page:last-child { break-after: auto; }
+  .card-page img { width: 100%; height: 100%; object-fit: contain; }
+}
