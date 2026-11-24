@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CARD, FRAMES, isPublicUrl, SITE, type FrameConfig } from '../config/frames'
 import { loadFrameImage } from '../booth/media'
-import { render, type PhotoSource } from '../booth/render'
+import { FRAME_FILTER, render, type PhotoSource } from '../booth/render'
 import { CARD_PX, canvasToBlob, renderCard } from '../cards/renderCard'
 import { Button } from '../components/ui/Button'
 import { AlertIcon, CheckIcon, DownloadIcon, PrinterIcon } from '../components/ui/Icons'
 import { downloadBlob, makeZip } from '../lib/zip'
 
-const STORE_KEY = 'nadhe-photobooth.baseUrl'
+const STORE_KEY = 'myphotobooth.baseUrl'
 
 function initialBase() {
   const env = (import.meta.env.VITE_PUBLIC_BASE_URL as string | undefined) || SITE.publicUrl
@@ -103,7 +103,7 @@ export function PanitiaPage() {
   const zipCards = async () => {
     setBusy('cards')
     try {
-      downloadBlob(await makeZip(await allCards()), 'nadhe-photobooth-kartu-qr.zip')
+      downloadBlob(await makeZip(await allCards()), 'myphotobooth-kartu-qr.zip')
     } finally {
       setBusy('')
     }
@@ -113,7 +113,7 @@ export function PanitiaPage() {
     setBusy('frames')
     try {
       const files = await Promise.all(FRAMES.map(async (f) => ({ name: `frame-${f.id}.png`, blob: await (await fetch(f.frame)).blob() })))
-      downloadBlob(await makeZip(files), 'nadhe-photobooth-frame.zip')
+      downloadBlob(await makeZip(files), 'myphotobooth-frame.zip')
     } finally {
       setBusy('')
     }
@@ -274,7 +274,7 @@ function MoodPanel({ frame, base, valid, onCard }: { frame: FrameConfig; base: s
         <figure>
           <figcaption className="mb-2 text-xs font-medium text-ink">PNG transparan (latar kotak-kotak = transparan asli)</figcaption>
           <div className="w-full max-w-[260px] rounded-lg bg-[length:20px_20px] bg-[conic-gradient(#e5e5e5_25%,#fff_0_50%,#e5e5e5_0_75%,#fff_0)]">
-            <img src={frame.frame} alt={`Frame ${frame.name}`} className="block w-full" />
+            <img src={frame.frame} alt={`Frame ${frame.name}`} className="block w-full" style={{ filter: FRAME_FILTER }} />
           </div>
           <ul className="mt-2 space-y-0.5 text-xs" data-testid={`transparency-${frame.id}`}>
             {!status && <li className="text-warm-gray">Memeriksa alpha channel…</li>}

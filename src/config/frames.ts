@@ -1,5 +1,5 @@
 // ============================================================================
-//  Nadhe Photobooth — mood catalogue (the ONLY file to edit for moods/frames).
+//  MyPhotobooth — mood catalogue (the ONLY file to edit for moods/frames).
 //
 //  Every physical mood card has a QR code pointing at  /booth/<id>.
 //  Frames come from src/assets/mood_frame.png, extracted by
@@ -60,7 +60,7 @@ export interface FrameConfig {
 
 /** Public production URL encoded into the QR cards. Never localhost. */
 export const SITE = {
-  /** Set VITE_PUBLIC_BASE_URL at build time (Vercel env), e.g. https://photobooth.nadhe.id */
+  /** Set VITE_PUBLIC_BASE_URL at build time (Vercel env), e.g. https://photobooth.example.com */
   publicUrl: '',
 }
 
@@ -74,8 +74,8 @@ export const OUTPUT = {
   background: '#ffffff',
   /** Save front-camera photos mirrored, exactly as the visitor saw them on screen. */
   mirrorFrontCamera: true,
-  /** File name prefix: NadhePhotobooth-happy-20261124-153012.jpg */
-  filePrefix: 'NadhePhotobooth',
+  /** File name prefix: MyPhotobooth-happy-20261124-153012.jpg */
+  filePrefix: 'MyPhotobooth',
 }
 
 /** Print sheet for the browser's print dialog: 4R = 10 × 15 cm. The strip is fitted, never cropped. */
@@ -127,7 +127,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 268, y: 476, width: 840, height: 608, radius: 162 },
       { id: 'photo-2', x: 268, y: 1148, width: 840, height: 624, radius: 176 },
     ],
-    colors: { primary: '#f47805', soft: '#ffe9a6', accent: '#ffc531' },
+    colors: { primary: '#155eef', soft: '#eaf3ff', accent: '#74b9ff' },
     enabled: true,
   },
   {
@@ -142,7 +142,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 228, y: 444, width: 828, height: 604, radius: 176 },
       { id: 'photo-2', x: 240, y: 1112, width: 816, height: 624, radius: 160 },
     ],
-    colors: { primary: '#215fc0', soft: '#d6e8fd', accent: '#6fa8f0' },
+    colors: { primary: '#246bce', soft: '#e8f2ff', accent: '#8dc2ff' },
     enabled: true,
   },
   {
@@ -158,7 +158,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 384, y: 460, width: 704, height: 608, radius: 176 },
       { id: 'photo-2', x: 240, y: 1132, width: 844, height: 624, radius: 174 },
     ],
-    colors: { primary: '#8633a3', soft: '#eadcfb', accent: '#b98be6' },
+    colors: { primary: '#0b56c3', soft: '#e4f0ff', accent: '#65aaf7' },
     enabled: true,
   },
   {
@@ -173,7 +173,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 244, y: 464, width: 840, height: 604, radius: 178 },
       { id: 'photo-2', x: 244, y: 1132, width: 840, height: 628, radius: 178 },
     ],
-    colors: { primary: '#108e60', soft: '#d6f1e1', accent: '#6cc79b' },
+    colors: { primary: '#1479dc', soft: '#e6f4ff', accent: '#77bfff' },
     enabled: true,
   },
   {
@@ -188,7 +188,7 @@ export const FRAMES: FrameConfig[] = [
       { id: 'photo-1', x: 240, y: 464, width: 844, height: 608, radius: 182 },
       { id: 'photo-2', x: 236, y: 1136, width: 844, height: 624, radius: 174 },
     ],
-    colors: { primary: '#d33257', soft: '#ffd9e1', accent: '#ff8fa6' },
+    colors: { primary: '#174db8', soft: '#e9f1ff', accent: '#9bc9ff' },
     enabled: true,
   },
 ]

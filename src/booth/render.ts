@@ -5,6 +5,9 @@
 // Layers (bottom → top): photo 1 in slot 1, photo 2 in slot 2, frame PNG.
 import { OUTPUT, type FrameConfig, type PhotoSlot } from '../config/frames'
 
+/** Keeps every existing mood illustration in the blue-and-white MyPhotobooth visual system. */
+export const FRAME_FILTER = 'grayscale(1) contrast(1.06) sepia(1) hue-rotate(165deg) saturate(2.1) brightness(1.08)'
+
 export interface PhotoSource {
   image: CanvasImageSource
   width: number
@@ -107,6 +110,10 @@ export function render(
     ctx.restore()
   })
 
-  if (drawFrame && frameImg) ctx.drawImage(frameImg, 0, 0, W, H)
+  if (drawFrame && frameImg) {
+    ctx.filter = FRAME_FILTER
+    ctx.drawImage(frameImg, 0, 0, W, H)
+    ctx.filter = 'none'
+  }
   ctx.restore()
 }

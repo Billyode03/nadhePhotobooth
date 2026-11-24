@@ -11,7 +11,7 @@ export default function App() {
   const lookup = route.name === 'booth' ? findFrame(route.slug) : null
 
   useEffect(() => {
-    document.title = lookup?.status === 'ok' ? `${lookup.frame.name} — Nadhe Photobooth` : 'Nadhe Photobooth'
+    document.title = lookup?.status === 'ok' ? `${lookup.frame.name} — MyPhotobooth` : 'MyPhotobooth'
   }, [lookup])
 
   switch (route.name) {

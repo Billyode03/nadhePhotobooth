@@ -12,7 +12,7 @@ export function WelcomePage() {
       <header className="safe-top pt-10 text-center">
         <p className="eyebrow text-gold-deep">Selamat datang di</p>
         <h1 className="mt-2 font-display text-4xl leading-tight text-maroon">
-          Nadhe <span className="italic">Photobooth</span>
+          My<span className="text-maroon">Photobooth</span>
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-sm text-warm-gray">Abadikan momen dengan HP-mu sendiri. Tanpa antre, tanpa operator.</p>
       </header>
@@ -38,7 +38,7 @@ export function WelcomePage() {
         <p className="text-sm">Scan QR pada kartu mood untuk memulai.</p>
       </div>
 
-      <footer className="safe-bottom mt-auto pt-10 text-center text-[0.7rem] text-warm-gray/80">Nadhe Photobooth</footer>
+      <footer className="safe-bottom mt-auto pt-10 text-center text-[0.7rem] text-warm-gray/80">MyPhotobooth</footer>
     </main>
   )
 }

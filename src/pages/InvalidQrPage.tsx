@@ -11,7 +11,7 @@ interface Props {
 const TEXT = {
   unknown: {
     title: 'QR tidak dikenali',
-    body: (d?: string) => `Kode kartu${d ? ` “${d}”` : ''} tidak terdaftar. Pastikan kamu memindai QR dari kartu mood resmi Nadhe Photobooth, lalu coba scan ulang.`,
+    body: (d?: string) => `Kode kartu${d ? ` “${d}”` : ''} tidak terdaftar. Pastikan kamu memindai QR dari kartu mood resmi MyPhotobooth, lalu coba scan ulang.`,
   },
   disabled: {
     title: 'Kartu sedang tidak aktif',
@@ -37,7 +37,7 @@ export function InvalidQrPage({ kind, detail }: Props) {
           Cara Menggunakan
         </Button>
       </div>
-      <p className="mt-10 eyebrow text-gold-deep">Nadhe Photobooth</p>
+      <p className="mt-10 eyebrow text-gold-deep">MyPhotobooth</p>
     </main>
   )
 }

@@ -79,7 +79,7 @@ export function ResultStage({ frame, photo, onRetake, onFinish }: Props) {
 
 export function DoneStage({ frame, onAgain }: { frame: FrameConfig; onAgain: () => void }) {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center px-8 text-center" style={{ background: `linear-gradient(180deg, ${frame.colors.soft} 0%, #fffaf3 75%)` }}>
+    <div className="fixed inset-0 flex flex-col items-center justify-center px-8 text-center" style={{ background: `linear-gradient(180deg, ${frame.colors.soft} 0%, #f6faff 75%)` }}>
       <span className="grid size-20 place-items-center rounded-full text-ivory shadow-lg" style={{ backgroundColor: frame.colors.primary }}>
         <CheckIcon size={40} />
       </span>
@@ -92,7 +92,7 @@ export function DoneStage({ frame, onAgain }: { frame: FrameConfig; onAgain: () 
           Foto Lagi
         </Button>
       </div>
-      <p className="mt-10 eyebrow text-gold-deep">Nadhe Photobooth</p>
+      <p className="mt-10 eyebrow text-gold-deep">MyPhotobooth</p>
     </div>
   )
 }

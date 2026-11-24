@@ -264,7 +264,7 @@ try {
       const slots = ${JSON.stringify(FRAMES[0].photoSlots)}.map(s => { const i = ((s.y + s.height / 2) * 1288 + (s.x + s.width / 2)) * 4; return O[i] + O[i+1] + O[i+2] });
       return { diff: d / (a.length / 4) / 3, frameDiff: fd / fn / 3, slots } })()`)
     assert.ok(check.diff < 20, `preview vs output mean diff ${check.diff.toFixed(1)}`)
-    assert.ok(check.frameDiff < 6, `frame pixels altered in output (mean diff ${check.frameDiff.toFixed(1)})`)
+    assert.ok(check.frameDiff > 10, `MyPhotobooth blue frame treatment was not applied (mean diff ${check.frameDiff.toFixed(1)})`)
     assert.ok(check.slots.every((v) => v < 740), `a slot is empty/white in the output: ${check.slots}`)
     await page.shot('06-result')
 
@@ -272,7 +272,7 @@ try {
     let file = ''
     for (let i = 0; i < 50 && !file; i++) {
       await sleep(100)
-      file = readdirSync(join(OUT, 'downloads')).find((f) => /^NadhePhotobooth-happy-\d{8}-\d{6}\.jpg$/.test(f)) ?? ''
+      file = readdirSync(join(OUT, 'downloads')).find((f) => /^MyPhotobooth-happy-\d{8}-\d{6}\.jpg$/.test(f)) ?? ''
     }
     assert.ok(file, 'download not found')
     assert.ok(statSync(join(OUT, 'downloads', file)).size > 100_000, 'file suspiciously small')
@@ -370,7 +370,7 @@ try {
     let zip = ''
     for (let i = 0; i < 80 && !zip; i++) {
       await sleep(100)
-      zip = readdirSync(join(OUT, 'downloads')).find((f) => f === 'nadhe-photobooth-kartu-qr.zip') ?? ''
+      zip = readdirSync(join(OUT, 'downloads')).find((f) => f === 'myphotobooth-kartu-qr.zip') ?? ''
     }
     assert.ok(zip, 'zip not downloaded')
     await page.eval(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('Unduh Kartu QR')).click()`)

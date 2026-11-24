@@ -49,7 +49,7 @@ export async function sharePhoto(photo: FinalPhoto): Promise<boolean> {
   const file = shareFile(photo)
   if (!navigator.canShare?.({ files: [file] })) return false
   try {
-    await navigator.share({ files: [file], title: 'Nadhe Photobooth' })
+    await navigator.share({ files: [file], title: 'MyPhotobooth' })
   } catch {
     /* visitor closed the sheet */
   }
