@@ -300,10 +300,17 @@ function MoodPanel({ frame, base, valid, onCard }: { frame: FrameConfig; base: s
         </figure>
 
         <figure>
-          <figcaption className="mb-2 text-xs font-medium text-ink">Kartu QR</figcaption>
+          <figcaption className="mb-2 text-xs font-medium text-ink">Kartu QR <span className="font-normal text-warm-gray">· tekan kartu untuk membuka booth</span></figcaption>
           {valid ? (
             card ? (
-              <img src={card.url} alt={`Kartu QR ${frame.name}`} data-testid={`card-${frame.id}`} className="w-full max-w-[300px] drop-shadow-md" />
+              <a
+                href={card.qr}
+                aria-label={`Buka booth frame ${frame.name}`}
+                className="block w-full max-w-[300px] rounded-3xl outline-none transition-transform hover:scale-[1.01] focus-visible:ring-4 focus-visible:ring-maroon/40"
+                title={`Buka booth ${frame.name}`}
+              >
+                <img src={card.url} alt={`Kartu QR ${frame.name}`} data-testid={`card-${frame.id}`} className="block w-full rounded-3xl drop-shadow-md" />
+              </a>
             ) : (
               <div className="grid aspect-[85/110] w-full max-w-[300px] place-items-center rounded-3xl bg-sand text-xs text-warm-gray">Membuat kartu…</div>
             )

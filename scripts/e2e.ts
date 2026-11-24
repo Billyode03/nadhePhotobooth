@@ -353,6 +353,8 @@ try {
     for (const f of FRAMES) await page.wait(`document.querySelector('[data-testid="card-${f.id}"]')?.complete`, 15000)
     await page.eval(JSQR)
     for (const f of FRAMES) {
+      const boothLink = await page.eval<string | null>(`document.querySelector('[aria-label="Buka booth frame ${f.name}"]')?.getAttribute('href') ?? null`)
+      assert.equal(boothLink, `${PUBLIC}/booth/${f.id}`, `${f.id} card click target`)
       const res = await page.eval<{ full: string | null; small: string | null; w: number; h: number }>(`(async () => {
         const img = document.querySelector('[data-testid="card-${f.id}"]');
         const read = (w) => { const h = Math.round(w * img.naturalHeight / img.naturalWidth); const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(img, 0, 0, w, h); const d = x.getImageData(0, 0, w, h); return jsQR(d.data, w, h)?.data ?? null };
