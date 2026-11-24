@@ -176,7 +176,7 @@ export async function renderCard(frame: FrameConfig, baseUrl: string): Promise<C
 
   // 6. Ornaments in the side margins only (outside the QR panel + quiet zone).
   const spark = await svgImage(svgDoc(sparkle(c.accent), false))
-  const spark2 = await svgImage(svgDoc(sparkle('#ffc531'), false))
+  const spark2 = await svgImage(svgDoc(sparkle('#74b9ff'), false))
   const heartC = await svgImage(svgDoc(heart(c.primary), false))
   const side = (panelX - W * 0.03) / 2
   const orn: [HTMLImageElement, number, number, number][] = [

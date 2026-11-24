@@ -56,8 +56,8 @@ function samplePhotos(frame: FrameConfig): PhotoSource[] {
     c.height = 680
     const ctx = c.getContext('2d')!
     const g = ctx.createLinearGradient(0, 0, 900, 680)
-    g.addColorStop(0, i ? '#7fb3d5' : '#f5b7a5')
-    g.addColorStop(1, i ? '#d2b4de' : '#f9e79f')
+    g.addColorStop(0, i ? '#8bc5ff' : '#dff0ff')
+    g.addColorStop(1, i ? '#d9edff' : '#9ecbff')
     ctx.fillStyle = g
     ctx.fillRect(0, 0, 900, 680)
     ctx.fillStyle = 'rgba(255,255,255,0.85)'
@@ -304,7 +304,7 @@ function MoodPanel({ frame, base, valid, onCard }: { frame: FrameConfig; base: s
           {valid ? (
             card ? (
               <a
-                href={card.qr}
+                href={`/booth/${frame.id}`}
                 aria-label={`Buka booth frame ${frame.name}`}
                 className="block w-full max-w-[300px] rounded-3xl outline-none transition-transform hover:scale-[1.01] focus-visible:ring-4 focus-visible:ring-maroon/40"
                 title={`Buka booth ${frame.name}`}

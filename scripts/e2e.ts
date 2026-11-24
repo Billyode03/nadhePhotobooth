@@ -354,7 +354,7 @@ try {
     await page.eval(JSQR)
     for (const f of FRAMES) {
       const boothLink = await page.eval<string | null>(`document.querySelector('[aria-label="Buka booth frame ${f.name}"]')?.getAttribute('href') ?? null`)
-      assert.equal(boothLink, `${PUBLIC}/booth/${f.id}`, `${f.id} card click target`)
+      assert.equal(boothLink, `/booth/${f.id}`, `${f.id} card click target`)
       const res = await page.eval<{ full: string | null; small: string | null; w: number; h: number }>(`(async () => {
         const img = document.querySelector('[data-testid="card-${f.id}"]');
         const read = (w) => { const h = Math.round(w * img.naturalHeight / img.naturalWidth); const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(img, 0, 0, w, h); const d = x.getImageData(0, 0, w, h); return jsQR(d.data, w, h)?.data ?? null };
@@ -390,6 +390,8 @@ try {
     const box = raw.toString('latin1').match(/\/MediaBox\s*\[\s*0 0 ([\d.]+) ([\d.]+)\s*\]/)
     assert.equal(pages, 5, `cards print has ${pages} pages`)
     assert.ok(box && Math.abs(+box[1] - 240.9) < 2 && Math.abs(+box[2] - 311.8) < 2, `card page size ${box?.slice(1)}`)
+    await page.eval(`document.querySelector('[aria-label="Buka booth frame Happy"]')?.click()`)
+    await page.wait(`document.querySelector('h1')?.textContent === 'Happy'`)
     await page.close()
   })
 } finally {
