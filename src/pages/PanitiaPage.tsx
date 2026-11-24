@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CARD, FRAMES, isPublicUrl, SITE, type FrameConfig } from '../config/frames'
 import { loadFrameImage } from '../booth/media'
-import { FRAME_FILTER, render, type PhotoSource } from '../booth/render'
+import { render, type PhotoSource } from '../booth/render'
 import { CARD_PX, canvasToBlob, renderCard } from '../cards/renderCard'
 import { Button } from '../components/ui/Button'
 import { AlertIcon, CheckIcon, DownloadIcon, PrinterIcon } from '../components/ui/Icons'
@@ -112,7 +112,8 @@ export function PanitiaPage() {
   const zipFrames = async () => {
     setBusy('frames')
     try {
-      const files = await Promise.all(FRAMES.map(async (f) => ({ name: `frame-${f.id}.png`, blob: await (await fetch(f.frame)).blob() })))
+      // The themed frames (exactly what visitors see and what is saved).
+      const files = await Promise.all(FRAMES.map(async (f) => ({ name: `frame-${f.id}.png`, blob: await (await fetch((await loadFrameImage(f.frame)).src)).blob() })))
       downloadBlob(await makeZip(files), 'myphotobooth-frame.zip')
     } finally {
       setBusy('')
@@ -274,7 +275,7 @@ function MoodPanel({ frame, base, valid, onCard }: { frame: FrameConfig; base: s
         <figure>
           <figcaption className="mb-2 text-xs font-medium text-ink">PNG transparan (latar kotak-kotak = transparan asli)</figcaption>
           <div className="w-full max-w-[260px] rounded-lg bg-[length:20px_20px] bg-[conic-gradient(#e5e5e5_25%,#fff_0_50%,#e5e5e5_0_75%,#fff_0)]">
-            <img src={frame.frame} alt={`Frame ${frame.name}`} className="block w-full" style={{ filter: FRAME_FILTER }} />
+            {img && <img src={img.src} alt={`Frame ${frame.name}`} className="block w-full" />}
           </div>
           <ul className="mt-2 space-y-0.5 text-xs" data-testid={`transparency-${frame.id}`}>
             {!status && <li className="text-warm-gray">Memeriksa alpha channel…</li>}
@@ -291,8 +292,8 @@ function MoodPanel({ frame, base, valid, onCard }: { frame: FrameConfig; base: s
             )}
           </ul>
           <div className="mt-3 flex flex-wrap gap-2">
-            <a href={frame.frame} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center rounded-full border border-maroon/40 px-4 text-xs text-maroon">Lihat PNG</a>
-            <a href={frame.frame} download={`frame-${frame.id}.png`} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-maroon/40 px-4 text-xs text-maroon">
+            <a href={img?.src ?? frame.frame} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center rounded-full border border-maroon/40 px-4 text-xs text-maroon">Lihat PNG</a>
+            <a href={img?.src ?? frame.frame} download={`frame-${frame.id}.png`} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-maroon/40 px-4 text-xs text-maroon">
               <DownloadIcon size={14} /> Unduh Frame
             </a>
             <a href={`/booth/${frame.id}`} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center rounded-full border border-maroon/40 px-4 text-xs text-maroon">Buka Booth</a>

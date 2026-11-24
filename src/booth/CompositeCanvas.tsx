@@ -114,7 +114,7 @@ export function CompositeCanvas({ frame, frameImg, photos, placements, editable,
         ref={canvasRef}
         aria-label={`Pratinjau foto dengan frame ${frame.name}`}
         style={{ width: fitW, height: fitH }}
-        className="touch-none drop-shadow-[0_14px_24px_rgb(74_41_37/0.28)]"
+        className="touch-none drop-shadow-[0_14px_24px_rgb(20_35_61/0.22)]"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

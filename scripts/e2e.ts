@@ -7,7 +7,7 @@ import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync, readFileSync
 import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import assert from 'node:assert/strict'
-import { FRAMES } from '../src/config/frames.ts'
+import { FRAMES, THEME } from '../src/config/frames.ts'
 
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const BASE = process.env.BASE_URL ?? 'http://localhost:4173'
@@ -108,8 +108,11 @@ async function newPage(init?: string) {
       throw new Error(`timeout waiting for: ${expr}`)
     },
     text: () => page.eval<string>("document.body.textContent"),
-    click: (label: string) =>
-      page.eval(`(() => { const b = [...document.querySelectorAll('button')].find(b => (b.textContent.trim() === ${JSON.stringify(label)} || b.getAttribute('aria-label') === ${JSON.stringify(label)})); if (!b) throw new Error('no button ${label}'); if (b.disabled) throw new Error('disabled ${label}'); b.click(); return true })()`),
+    click: async (label: string) => {
+      // Buttons are disabled while a photo is being processed; wait (max 8 s) like a person would.
+      await page.wait(`[...document.querySelectorAll('button')].some(b => (b.textContent.trim() === ${JSON.stringify(label)} || b.getAttribute('aria-label') === ${JSON.stringify(label)}) && !b.disabled)`)
+      return page.eval(`(() => { const b = [...document.querySelectorAll('button')].find(b => (b.textContent.trim() === ${JSON.stringify(label)} || b.getAttribute('aria-label') === ${JSON.stringify(label)})); if (!b) throw new Error('no button ${label}'); if (b.disabled) throw new Error('disabled ${label}'); b.click(); return true })()`)
+    },
     async shot(name: string) {
       const { data } = await p.send('Page.captureScreenshot', { format: 'png' })
       writeFileSync(join(OUT, `${name}.png`), Buffer.from(data, 'base64'))
@@ -171,7 +174,7 @@ try {
     const page = await newPage()
     for (const f of FRAMES) {
       await page.go(`/booth/${f.id}`)
-      await page.wait(`document.querySelector('img[alt="Frame ${f.name}"]')?.src.endsWith('/frames/${f.id}.png') && document.querySelector('h1')?.textContent === '${f.name}'`)
+      await page.wait(`document.querySelector('img[alt="Frame ${f.name}"]')?.dataset.frame === '/frames/${f.id}.png' && document.querySelector('h1')?.textContent === '${f.name}'`)
     }
     await page.shot('01-intro-confident')
     await page.close()
@@ -192,6 +195,17 @@ try {
 
     // Photo 1 with countdown.
     await page.wait(`document.querySelector('video')?.readyState >= 2 && !document.querySelector("button[aria-label='Ambil foto']").disabled`)
+    const cameraFrame = await page.eval<string>(`document.querySelector('[data-testid="camera-frame"]').src`)
+    // The themed frame must match the browser's own CSS filter (our JS port of the maths).
+    const filterDiff = await page.eval<number>(`(async () => {
+      const load = (src) => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src });
+      const [orig, ours] = await Promise.all([load('/frames/happy.png'), load(${JSON.stringify(cameraFrame)})]);
+      const W = 322, H = 580;
+      const draw = (img, filter) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); if (filter) x.filter = filter; x.drawImage(img, 0, 0, W, H); return x.getImageData(0, 0, W, H).data };
+      const ref = draw(orig, ${JSON.stringify(THEME.frameFilter)}), got = draw(ours, '');
+      let d = 0, n = 0; for (let k = 0; k < ref.length; k += 4) if (ref[k+3] === 255 && got[k+3] === 255) { d += Math.abs(ref[k]-got[k]) + Math.abs(ref[k+1]-got[k+1]) + Math.abs(ref[k+2]-got[k+2]); n++ }
+      return d / n / 3 })()`)
+    assert.ok(filterDiff < 6, `JS frame filter differs from Chrome's CSS filter (mean ${filterDiff.toFixed(1)})`)
     await page.shot('02-camera-slot1')
     await page.click('Ambil foto')
     const seen = new Set<string>()
@@ -253,7 +267,7 @@ try {
     const check = await page.eval<{ diff: number; frameDiff: number; slots: number[] }>(`(async () => {
       const load = (src) => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src });
       const out = await load(document.querySelector("img[alt^='Hasil foto']").src);
-      const fr = await load('/frames/happy.png');
+      const fr = await load(${JSON.stringify(cameraFrame)});
       const px = (img, w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(img, 0, 0, w, h); return x.getImageData(0, 0, w, h).data };
       const a = px(await load(${JSON.stringify(preview)}), 64, 116), b = px(out, 64, 116);
       let d = 0; for (let k = 0; k < a.length; k += 4) d += Math.abs(a[k]-b[k]) + Math.abs(a[k+1]-b[k+1]) + Math.abs(a[k+2]-b[k+2]);
@@ -264,7 +278,7 @@ try {
       const slots = ${JSON.stringify(FRAMES[0].photoSlots)}.map(s => { const i = ((s.y + s.height / 2) * 1288 + (s.x + s.width / 2)) * 4; return O[i] + O[i+1] + O[i+2] });
       return { diff: d / (a.length / 4) / 3, frameDiff: fd / fn / 3, slots } })()`)
     assert.ok(check.diff < 20, `preview vs output mean diff ${check.diff.toFixed(1)}`)
-    assert.ok(check.frameDiff > 10, `MyPhotobooth blue frame treatment was not applied (mean diff ${check.frameDiff.toFixed(1)})`)
+    assert.ok(check.frameDiff < 6, `saved photo's frame differs from the frame shown in the camera (mean diff ${check.frameDiff.toFixed(1)})`)
     assert.ok(check.slots.every((v) => v < 740), `a slot is empty/white in the output: ${check.slots}`)
     await page.shot('06-result')
 
@@ -392,6 +406,112 @@ try {
     assert.ok(box && Math.abs(+box[1] - 240.9) < 2 && Math.abs(+box[2] - 311.8) < 2, `card page size ${box?.slice(1)}`)
     await page.eval(`document.querySelector('[aria-label="Buka booth frame Happy"]')?.click()`)
     await page.wait(`document.querySelector('h1')?.textContent === 'Happy'`)
+    await page.close()
+  })
+
+  await test('every remaining button: back, Ulangi, zoom, Galeri per slot, Ganti, Semua, Ubah, Foto Lagi', async () => {
+    const page = await newPage()
+    await page.go('/booth/sad')
+    await page.wait('![...document.querySelectorAll("button")].find(b => b.textContent.includes("Mulai Foto")).disabled')
+    // Camera "X" (Kembali) → back to intro, camera off.
+    await page.click('Mulai Foto')
+    await page.wait(`document.querySelector('video')?.readyState >= 2`)
+    await page.click('Kembali')
+    await page.wait('document.body.textContent.includes("Mulai Foto")')
+    await sleep(150)
+    assert.equal(await page.eval(streamsLive), 0, 'camera still on after Kembali')
+    // Shot 1, then "Ulangi" on the preview → camera for the same slot.
+    await page.click('Mulai Foto')
+    await shoot(page, 0)
+    await page.click('Ulangi')
+    await shoot(page, 0)
+    assert.match(await page.text(), /Foto 1 dari 2/)
+    // Zoom slider changes the preview.
+    const before = await page.eval<number[][]>(slotSignature('sad'))
+    await page.eval(`(() => { const r = document.querySelector('input[type=range]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(r, '2'); r.dispatchEvent(new Event('input', { bubbles: true })) })()`)
+    await sleep(150)
+    const after = await page.eval<number[][]>(slotSignature('sad'))
+    assert.ok(!same(before[0], after[0]), 'zoom slider did nothing')
+    // Photo 2 from the camera's own "Galeri" button.
+    await page.click('Foto 2')
+    await page.wait(`document.querySelector('video')?.readyState >= 2`)
+    await page.eval(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Galeri').click()`)
+    await page.setFile(resolve(UPLOAD!))
+    await page.wait('document.body.textContent.includes("Sudah pas?") && document.body.textContent.includes("Foto 2 dari 2")')
+    // "Ganti" (upload source) reopens the picker for the same slot.
+    await page.click('Ganti')
+    await page.setFile(resolve(UPLOAD!))
+    await page.wait('document.body.textContent.includes("Foto 2 dari 2")')
+    await page.click('Lihat Hasil')
+    await page.wait('document.body.textContent.includes("Hasil gabungan")')
+    // Overview "Galeri" for photo 1 replaces photo 1 only.
+    const [o1, o2] = await page.eval<number[][]>(slotSignature('sad'))
+    await page.click('Ganti foto 1 dari galeri')
+    await page.setFile(resolve(UPLOAD!))
+    await page.wait('document.body.textContent.includes("Foto 1 dari 2")')
+    await page.click('Lihat Hasil')
+    await page.wait('document.body.textContent.includes("Hasil gabungan")')
+    const [n1, n2] = await page.eval<number[][]>(slotSignature('sad'))
+    assert.ok(!same(o1, n1), 'Galeri did not replace photo 1')
+    assert.ok(same(o2, n2), 'Galeri for photo 1 changed photo 2')
+    // Save → result → "Ubah" back to overview with both photos kept.
+    await page.click('Simpan Hasil')
+    await page.wait('document.querySelector("img[alt^=\'Hasil foto\']")?.complete')
+    await page.click('Ubah')
+    await page.wait('document.body.textContent.includes("Hasil gabungan")')
+    const [k1, k2] = await page.eval<number[][]>(slotSignature('sad'))
+    assert.ok(same(n1, k1) && same(n2, k2), 'Ubah lost the photos')
+    // "Semua" clears both and restarts at photo 1.
+    await page.click('Ulangi semua foto')
+    await page.wait(`document.querySelector('video')?.readyState >= 2 && document.body.textContent.includes('Foto 1')`)
+    await page.click('Kembali')
+    await page.wait('document.body.textContent.includes("Mulai Foto")')
+    // Finish → Foto Lagi → intro.
+    await page.click('Mulai Foto')
+    await shoot(page, 0)
+    await page.click('Foto 2')
+    await shoot(page, 1)
+    await page.click('Lihat Hasil')
+    await page.wait('document.body.textContent.includes("Hasil gabungan")')
+    await page.click('Simpan Hasil')
+    await page.wait('document.querySelector("img[alt^=\'Hasil foto\']")?.complete')
+    await page.click('Selesai')
+    await page.wait('document.body.textContent.includes("Terima kasih")')
+    await page.click('Foto Lagi')
+    await page.wait('document.body.textContent.includes("Mulai Foto")')
+    assert.deepEqual(page.errors, [])
+    await page.close()
+  })
+
+  await test('Coba Lagi after a camera error retries the camera; Cara Menggunakan goes home', async () => {
+    const page = await newPage(`window.__tries = (window.__tries || 0) + 1; if (window.__tries === 1) throw new DOMException('busy', 'NotReadableError');`)
+    await page.go('/booth/happy')
+    await page.wait('![...document.querySelectorAll("button")].find(b => b.textContent.includes("Mulai Foto")).disabled')
+    await page.click('Mulai Foto')
+    await page.wait('document.body.textContent.includes("Kamera sedang dipakai")')
+    await page.click('Coba Lagi')
+    await page.wait(`document.querySelector('video')?.readyState >= 2 && !document.querySelector("button[aria-label='Ambil foto']").disabled`)
+    await page.go('/booth/unknown-card')
+    await page.click('Cara Menggunakan')
+    await page.wait('document.body.textContent.includes("Scan QR pada kartu mood")')
+    await page.close()
+  })
+
+  await test('panitia: Unduh Semua Frame (.zip), frame links and booth link', async () => {
+    const page = await newPage()
+    await page.cdp.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
+    await page.go('/panitia')
+    for (const f of FRAMES) await page.wait(`document.querySelector('[data-testid="transparency-${f.id}"]')?.textContent.includes('Status: OK')`, 10000)
+    const links = await page.eval<string[]>(`[...document.querySelectorAll('a')].filter(a => /Lihat PNG|Unduh Frame/.test(a.textContent)).map(a => a.href)`)
+    assert.equal(links.length, 10, 'frame links missing')
+    assert.ok(links.every((h) => h.startsWith('blob:')), 'frame links do not point to the themed frame')
+    await page.click('Unduh Semua Frame (.zip)')
+    let zip = ''
+    for (let i = 0; i < 100 && !zip; i++) {
+      await sleep(100)
+      zip = readdirSync(join(OUT, 'downloads')).find((f) => /frame\.zip$/.test(f)) ?? ''
+    }
+    assert.ok(zip, 'frame zip not downloaded')
     await page.close()
   })
 } finally {

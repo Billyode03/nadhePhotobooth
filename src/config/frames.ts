@@ -64,6 +64,16 @@ export const SITE = {
   publicUrl: '',
 }
 
+/** Visual theme applied to the frame artwork. */
+export const THEME = {
+  /**
+   * CSS-style filter baked into every frame (preview AND saved photo), so the original mood
+   * illustrations follow the blue-and-white MyPhotobooth look. Set to '' for original colours.
+   * Supported: grayscale, sepia, saturate, hue-rotate, contrast, brightness.
+   */
+  frameFilter: 'grayscale(1) contrast(1.06) sepia(1) hue-rotate(165deg) saturate(2.1) brightness(1.08)',
+}
+
 /** Global output settings. */
 export const OUTPUT = {
   /** 'image/jpeg' (smaller, best for printing photos) or 'image/png' (lossless, much larger). */

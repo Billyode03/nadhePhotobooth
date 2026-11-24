@@ -9,6 +9,8 @@ import { CAMERA_ERROR_TEXT, useCamera } from './useCamera'
 
 interface Props {
   frame: FrameConfig
+  /** Themed frame image URL (same pixels as the export). */
+  frameSrc: string
   /** Slot being photographed (0 = top). */
   slot: number
   photos: (PhotoSource | null)[]
@@ -26,7 +28,7 @@ const pct = (v: number) => `${(v * 100).toFixed(4)}%`
  * already taken show in the other slots, and the frame PNG is on top. The captured photo
  * therefore lands where the visitor saw it.
  */
-export function CameraStage({ frame, slot, photos, placements, onCapture, onPickFile, onClose }: Props) {
+export function CameraStage({ frame, frameSrc, slot, photos, placements, onCapture, onPickFile, onClose }: Props) {
   const { videoRef, status, error, retry } = useCamera(true)
   const out = outputSize(frame)
   const { ref: fitRef, w: fitW, h: fitH } = useFitBox(out.w / out.h)
@@ -133,7 +135,7 @@ export function CameraStage({ frame, slot, photos, placements, onCapture, onPick
               )}
               {flash && <div className="flash pointer-events-none absolute inset-0 bg-white" />}
             </div>
-            <img src={frame.frame} alt="" className="pointer-events-none absolute inset-0 h-full w-full" />
+            <img src={frameSrc} alt="" data-testid="camera-frame" className="pointer-events-none absolute inset-0 h-full w-full" />
           </div>
         </div>
 

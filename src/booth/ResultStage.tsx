@@ -37,7 +37,7 @@ export function ResultStage({ frame, photo, onRetake, onFinish }: Props) {
             src={photo.url}
             alt={`Hasil foto dengan frame ${frame.name}`}
             style={{ width: fitW, height: fitH }}
-            className="rounded-lg shadow-[0_14px_36px_-18px_rgb(74_41_37/0.7)]"
+            className="rounded-lg shadow-[0_14px_36px_-18px_rgb(20_35_61/0.55)]"
           />
         </div>
       </div>

@@ -2,12 +2,16 @@
 // src/album/studio/frames.ts; decodeFile from src/album/compress.ts (EXIF
 // orientation applied by the decoder, size/format validation), minus the
 // re-compression: uploaded photos keep their quality until the final export.
-import { OUTPUT, UPLOAD } from '../config/frames'
+import { OUTPUT, THEME, UPLOAD } from '../config/frames'
+import { filteredImage } from './frameFilter'
 import type { PhotoSource } from './render'
 
 const images = new Map<string, Promise<HTMLImageElement>>()
 
-/** Loads (and caches) a frame PNG. */
+/**
+ * Loads (and caches) a frame PNG with THEME.frameFilter baked in. Every screen and the
+ * export use this one image (its .src is a blob URL), so colours always match.
+ */
 export function loadFrameImage(path: string): Promise<HTMLImageElement> {
   let p = images.get(path)
   if (!p) {
@@ -15,12 +19,14 @@ export function loadFrameImage(path: string): Promise<HTMLImageElement> {
       const img = new Image()
       img.decoding = 'async'
       img.onload = () => resolve(img)
-      img.onerror = () => {
-        images.delete(path)
-        reject(new Error('FRAME_IMAGE'))
-      }
+      img.onerror = () => reject(new Error('FRAME_IMAGE'))
       img.src = path
     })
+      .then((img) => filteredImage(img, THEME.frameFilter).catch(() => img))
+      .catch((err) => {
+        images.delete(path)
+        throw err
+      })
     images.set(path, p)
   }
   return p

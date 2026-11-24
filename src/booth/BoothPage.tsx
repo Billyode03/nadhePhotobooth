@@ -142,7 +142,7 @@ export function BoothPage({ frame }: { frame: FrameConfig }) {
       {stage.k === 'intro' && (
         <IntroStage
           frame={frame}
-          ready={!!frameImg}
+          frameSrc={frameImg?.src ?? null}
           error={frameError}
           onCamera={() => setStage({ k: 'camera', slot: firstEmpty })}
           onPickFile={() => pickFile(firstEmpty)}
@@ -152,6 +152,7 @@ export function BoothPage({ frame }: { frame: FrameConfig }) {
         <CameraStage
           key={stage.slot}
           frame={frame}
+          frameSrc={frameImg.src}
           slot={stage.slot}
           photos={photos}
           placements={placements}
